@@ -4,7 +4,6 @@ using RootMotion.FinalIK;
 using System.Reflection;
 using UnityEngine;
 using ViveSR.anipal.Lip;
-
 namespace ml_dht
 {
     [DisallowMultipleComponent]
@@ -34,6 +33,17 @@ namespace ml_dht
         Quaternion m_bindRotation;
         Quaternion m_lastHeadRotation;
 
+
+        VRIK m_vrIK = null;
+
+        internal void OnIKPreUpdate()
+        {
+            if (m_vrIK != null) {
+                //m_vrIK.solver.spine.headTarget.transform.localPosition = m_headPosition;
+                m_vrIK.solver.spine.headTarget.transform.localRotation = m_headRotation;
+            }
+        }
+
         // Unity events
         void Start()
         {
@@ -62,10 +72,10 @@ namespace ml_dht
         {
             m_headPosition.Set(p_data.m_headPositionX * (m_mirrored ? -1f : 1f), p_data.m_headPositionY, p_data.m_headPositionZ);
             m_headRotation.Set(p_data.m_headRotationX, p_data.m_headRotationY * (m_mirrored ? -1f : 1f), p_data.m_headRotationZ * (m_mirrored ? -1f : 1f), p_data.m_headRotationW);
-            m_gazeDirection.Set(m_mirrored ? (1f - p_data.m_gazeX) : p_data.m_gazeX, p_data.m_gazeY);
+            /*m_gazeDirection.Set(m_mirrored ? (1f - p_data.m_gazeX) : p_data.m_gazeX, p_data.m_gazeY);
             m_blinkProgress = p_data.m_blink;
             m_mouthShapes.Set(p_data.m_mouthOpen, p_data.m_mouthShape);
-            m_eyebrowsProgress = p_data.m_brows;
+            m_eyebrowsProgress = p_data.m_brows;*/
         }
 
         void OnLookIKPostUpdate()
@@ -80,6 +90,7 @@ namespace ml_dht
         }
 
         // Game events
+        /*
         internal void OnEyeControllerUpdate(CVREyeController p_component)
         {
             if(m_enabled)
@@ -116,12 +127,16 @@ namespace ml_dht
                 p_component.BlendShapeValues[(int)LipShape_v2.Mouth_Smile_Left] = ((m_mouthShapes.y < 0f) ? l_weight : 0f);
                 p_component.BlendShapeValues[(int)LipShape_v2.Mouth_Smile_Right] = ((m_mouthShapes.y < 0f) ? l_weight : 0f);
                 p_component.LipSyncWasUpdated = true;
-                p_component.UpdateLipShapes();
+                //p_component.UpdateLipShapes();
             }
-        }
+        }*/
 
         internal void OnSetupAvatar()
         {
+
+            m_vrIK = PlayerSetup.Instance._animator.GetComponent<VRIK>();
+            m_vrIK.solver.OnPreUpdate += this.OnIKPreUpdate;
+
             m_avatarDescriptor = PlayerSetup.Instance._avatar.GetComponent<CVRAvatar>();
             m_headBone = PlayerSetup.Instance._animator.GetBoneTransform(HumanBodyBones.Head);
             m_lookIK = PlayerSetup.Instance._avatar.GetComponent<LookAtIK>();
@@ -135,6 +150,7 @@ namespace ml_dht
         }
         internal void OnAvatarClear()
         {
+            m_vrIK = null;
             m_avatarDescriptor = null;
             m_lookIK = null;
             m_headBone = null;

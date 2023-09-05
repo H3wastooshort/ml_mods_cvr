@@ -37,7 +37,7 @@ namespace ml_dht
                 null,
                 new HarmonyLib.HarmonyMethod(typeof(DesktopHeadTracking).GetMethod(nameof(OnSetupAvatar_Postfix), BindingFlags.Static | BindingFlags.NonPublic))
             );
-            HarmonyInstance.Patch(
+            /*HarmonyInstance.Patch(
                 typeof(CVREyeController).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic),
                 null,
                 new HarmonyLib.HarmonyMethod(typeof(DesktopHeadTracking).GetMethod(nameof(OnEyeControllerUpdate_Postfix), BindingFlags.Static | BindingFlags.NonPublic))
@@ -46,7 +46,7 @@ namespace ml_dht
                 typeof(CVRFaceTracking).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic),
                 null,
                 new HarmonyLib.HarmonyMethod(typeof(DesktopHeadTracking).GetMethod(nameof(OnFaceTrackingUpdate_Postfix), BindingFlags.Static | BindingFlags.NonPublic))
-            );
+            );*/
 
             MelonLoader.MelonCoroutines.Start(WaitForPlayer());
         }
@@ -115,7 +115,7 @@ namespace ml_dht
             }
         }
 
-        static void OnEyeControllerUpdate_Postfix(ref CVREyeController __instance) => ms_instance?.OnEyeControllerUpdate(__instance);
+        /*static void OnEyeControllerUpdate_Postfix(ref CVREyeController __instance) => ms_instance?.OnEyeControllerUpdate(__instance);
         void OnEyeControllerUpdate(CVREyeController p_component)
         {
             try
@@ -141,6 +141,6 @@ namespace ml_dht
             {
                 MelonLoader.MelonLogger.Error(e);
             }
-        }
+        }*/
     }
 }
