@@ -36,11 +36,29 @@ namespace ml_dht
 
         VRIK m_vrIK = null;
 
+        Vector3 prevHeadPos = Vector3.zero;
+        Quaternion prevHeadRot = Quaternion.identity;
+        bool prevHeadValid = false;
+
         internal void OnIKPreUpdate()
         {
-            if (m_vrIK != null) {
-                //m_vrIK.solver.spine.headTarget.transform.localPosition = m_headPosition;
+            if (m_vrIK != null && m_headTracking && m_enabled) {
+                prevHeadPos = m_vrIK.solver.spine.headTarget.transform.localPosition;
+                prevHeadRot = m_vrIK.solver.spine.headTarget.transform.localRotation;
+                prevHeadValid = true;
+
+                m_vrIK.solver.spine.headTarget.transform.localPosition = m_headPosition;
                 m_vrIK.solver.spine.headTarget.transform.localRotation = m_headRotation;
+            }
+        }
+
+        internal void OnIKPostUpdate()
+        {
+            if (m_vrIK != null && prevHeadValid)
+            {
+                m_vrIK.solver.spine.headTarget.transform.localPosition = prevHeadPos;
+                m_vrIK.solver.spine.headTarget.transform.localRotation = prevHeadRot;
+                prevHeadValid = false;
             }
         }
 
@@ -136,6 +154,7 @@ namespace ml_dht
 
             m_vrIK = PlayerSetup.Instance._animator.GetComponent<VRIK>();
             m_vrIK.solver.OnPreUpdate += this.OnIKPreUpdate;
+            m_vrIK.solver.OnPostUpdate+= this.OnIKPostUpdate;
 
             m_avatarDescriptor = PlayerSetup.Instance._avatar.GetComponent<CVRAvatar>();
             m_headBone = PlayerSetup.Instance._animator.GetBoneTransform(HumanBodyBones.Head);
