@@ -1,6 +1,7 @@
 using ABI.CCK.Components;
 using ABI_RC.Core.Player;
 using System.Reflection;
+using UnityEngine;
 
 namespace ml_dht
 {
@@ -41,12 +42,12 @@ namespace ml_dht
                 typeof(CVREyeController).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic),
                 null,
                 new HarmonyLib.HarmonyMethod(typeof(DesktopHeadTracking).GetMethod(nameof(OnEyeControllerUpdate_Postfix), BindingFlags.Static | BindingFlags.NonPublic))
-            );
+            );*/
             HarmonyInstance.Patch(
                 typeof(CVRFaceTracking).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic),
                 null,
                 new HarmonyLib.HarmonyMethod(typeof(DesktopHeadTracking).GetMethod(nameof(OnFaceTrackingUpdate_Postfix), BindingFlags.Static | BindingFlags.NonPublic))
-            );*/
+            );
 
             MelonLoader.MelonCoroutines.Start(WaitForPlayer());
         }
@@ -57,6 +58,14 @@ namespace ml_dht
                 yield return null;
 
             m_localTracked = PlayerSetup.Instance.gameObject.AddComponent<HeadTracked>();
+
+            m_localTracked.log = LoggerInstance;
+
+            loadSettings();
+        }
+
+        public void loadSettings()
+        {
             m_localTracked.SetEnabled(Settings.Enabled);
             m_localTracked.SetHeadTracking(Settings.HeadTracking);
             m_localTracked.SetEyeTracking(Settings.EyeTracking);
@@ -84,6 +93,17 @@ namespace ml_dht
                 m_trackingData = TrackingData.ToObject(m_buffer);
                 if(m_localTracked != null)
                     m_localTracked.UpdateTrackingData(ref m_trackingData);
+            }
+        }
+
+        public override void OnLateUpdate()
+        { 
+            if (Input.GetKeyDown(KeyCode.F5)) m_localTracked.SetEnabled(true);
+            if (Input.GetKeyDown(KeyCode.F6)) m_localTracked.SetEnabled(false);
+            if (Input.GetKeyDown(KeyCode.F7))
+            {
+                m_localTracked.rel_rotation = !m_localTracked.rel_rotation;
+                LoggerInstance.Msg(m_localTracked.rel_rotation  ? "RelRot On" :"RelRot Off");
             }
         }
 
@@ -128,7 +148,7 @@ namespace ml_dht
                 MelonLoader.MelonLogger.Error(e);
             }
         }
-
+        */
         static void OnFaceTrackingUpdate_Postfix(ref CVRFaceTracking __instance) => ms_instance?.OnFaceTrackingUpdate(__instance);
         void OnFaceTrackingUpdate(CVRFaceTracking p_component)
         {
@@ -141,6 +161,6 @@ namespace ml_dht
             {
                 MelonLoader.MelonLogger.Error(e);
             }
-        }*/
+        }
     }
 }

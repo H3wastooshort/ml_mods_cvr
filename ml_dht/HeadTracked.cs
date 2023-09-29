@@ -4,6 +4,7 @@ using RootMotion.FinalIK;
 using System.Reflection;
 using UnityEngine;
 using ViveSR.anipal.Lip;
+using MelonLoader;
 namespace ml_dht
 {
     [DisallowMultipleComponent]
@@ -18,6 +19,10 @@ namespace ml_dht
         float m_smoothing = 0.5f;
         bool m_mirrored = false;
         bool m_faceOverride = true;
+
+        public bool rel_rotation = true;
+
+        public MelonLoader.MelonLogger.Instance log;
 
         CVRAvatar m_avatarDescriptor = null;
         LookAtIK m_lookIK = null;
@@ -43,12 +48,21 @@ namespace ml_dht
         internal void OnIKPreUpdate()
         {
             if (m_vrIK != null && m_headTracking && m_enabled) {
-                prevHeadPos = m_vrIK.solver.spine.headTarget.transform.localPosition;
+                //prevHeadPos = m_vrIK.solver.spine.headTarget.transform.localPosition;
+
+
                 prevHeadRot = m_vrIK.solver.spine.headTarget.transform.localRotation;
                 prevHeadValid = true;
 
-                m_vrIK.solver.spine.headTarget.transform.localPosition = m_headPosition;
-                m_vrIK.solver.spine.headTarget.transform.localRotation = m_headRotation;
+                //m_vrIK.solver.spine.headTarget.transform.localPosition = m_headPosition;
+                m_vrIK.solver.spine.headTarget.transform.localRotation = m_headRotation.normalized;
+
+
+                if (rel_rotation)
+                {
+                    Transform l_camera = PlayerSetup.Instance.GetActiveCamera().transform;
+                    m_vrIK.solver.spine.headTarget.transform.rotation *= l_camera.rotation.normalized;
+                }
             }
         }
 
@@ -56,7 +70,7 @@ namespace ml_dht
         {
             if (m_vrIK != null && prevHeadValid)
             {
-                m_vrIK.solver.spine.headTarget.transform.localPosition = prevHeadPos;
+                //m_vrIK.solver.spine.headTarget.transform.localPosition = prevHeadPos;
                 m_vrIK.solver.spine.headTarget.transform.localRotation = prevHeadRot;
                 prevHeadValid = false;
             }
@@ -90,10 +104,10 @@ namespace ml_dht
         {
             m_headPosition.Set(p_data.m_headPositionX * (m_mirrored ? -1f : 1f), p_data.m_headPositionY, p_data.m_headPositionZ);
             m_headRotation.Set(p_data.m_headRotationX, p_data.m_headRotationY * (m_mirrored ? -1f : 1f), p_data.m_headRotationZ * (m_mirrored ? -1f : 1f), p_data.m_headRotationW);
-            /*m_gazeDirection.Set(m_mirrored ? (1f - p_data.m_gazeX) : p_data.m_gazeX, p_data.m_gazeY);
+            m_gazeDirection.Set(m_mirrored ? (1f - p_data.m_gazeX) : p_data.m_gazeX, p_data.m_gazeY);
             m_blinkProgress = p_data.m_blink;
             m_mouthShapes.Set(p_data.m_mouthOpen, p_data.m_mouthShape);
-            m_eyebrowsProgress = p_data.m_brows;*/
+            m_eyebrowsProgress = p_data.m_brows;
         }
 
         void OnLookIKPostUpdate()
@@ -108,11 +122,11 @@ namespace ml_dht
         }
 
         // Game events
-        /*
-        internal void OnEyeControllerUpdate(CVREyeController p_component)
+        /*internal void OnEyeControllerUpdate(CVREyeController p_component)
         {
             if(m_enabled)
             {
+                
                 // Gaze
                 if(m_eyeTracking)
                 {
@@ -129,11 +143,11 @@ namespace ml_dht
                     p_component.blinkProgress = m_blinkProgress;
                 }
             }
-        }
+        }*/
 
         internal void OnFaceTrackingUpdate(CVRFaceTracking p_component)
         {
-            if(m_enabled && m_faceOverride)
+            if (m_enabled && m_faceOverride)
             {
                 if(m_avatarDescriptor != null)
                     m_avatarDescriptor.useVisemeLipsync = false;
@@ -147,7 +161,7 @@ namespace ml_dht
                 p_component.LipSyncWasUpdated = true;
                 //p_component.UpdateLipShapes();
             }
-        }*/
+        }
 
         internal void OnSetupAvatar()
         {
@@ -180,12 +194,16 @@ namespace ml_dht
         // Settings
         internal void SetEnabled(bool p_state)
         {
-            if(m_enabled != p_state)
+            log.Msg(m_enabled ? "Was Enabled" : "Was Disabled");
+
+            if (m_enabled != p_state)
             {
                 m_enabled = p_state;
                 if(m_enabled && m_headTracking)
                     m_lastHeadRotation = ((m_headBone != null) ? m_headBone.rotation : m_bindRotation);
             }
+
+            log.Msg(m_enabled ? "Now Enabled" : "Now Disabled");
         }
         internal void SetHeadTracking(bool p_state)
         {
