@@ -47,15 +47,15 @@ namespace ml_dht
 
         public void dump_data(MelonLogger.Instance logger)
         {
-            float conv = 360 / (2 * Mathf.PI);
             logger.Msg(m_enabled ? "Mod Enabled" : "Mod Disabled");
             logger.Msg(m_headTracking ? "Head Enabled" : "Head Disabled");
             logger.Msg(string.Format("Head Pos: X{0} Y{1} Z{2}", m_headPosition.x, m_headPosition.y, m_headPosition.z));
-            logger.Msg(string.Format("Head Rot: X{0}° Y{1}° Z{2}°", m_headRotation.x * conv, m_headRotation.y * conv, m_headRotation.z * conv));
+            logger.Msg(string.Format("Head Rot: X{0} Y{1} Z{2} W{3}", m_headRotation.x, m_headRotation.y, m_headRotation.z, m_headRotation.w));
         }
 
         internal void OnIKPreUpdate()
         {
+
             if (m_vrIK != null && m_headTracking && m_enabled) {
                 //prevHeadPos = m_vrIK.solver.spine.headTarget.transform.localPosition;
 
