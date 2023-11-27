@@ -56,7 +56,7 @@ namespace ml_dht
         internal void OnIKPreUpdate()
         {
 
-            if (m_vrIK != null && m_headTracking && m_enabled) {
+            if (m_vrIK != null && m_headTracking && m_enabled && m_headPosition != Vector3.zero /*sanity check if vseeface is running*/) {
                 //prevHeadPos = m_vrIK.solver.spine.headTarget.transform.localPosition;
 
 
