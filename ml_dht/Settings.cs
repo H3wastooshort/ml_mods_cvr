@@ -17,10 +17,10 @@ namespace ml_dht
             FaceOverride
         }
 
-        public static bool Enabled { get; private set; } = false;
+        public static bool Enabled { get; private set; } = true;
         public static bool HeadTracking { get; private set; } = true;
-        public static bool EyeTracking { get; private set; } = true;
-        public static bool Blinking { get; private set; } = true;
+        public static bool EyeTracking { get; private set; } = false;
+        public static bool Blinking { get; private set; } = false;
         public static bool Mirrored { get; private set; } = false;
         public static float Smoothing { get; private set; } = 0.5f;
         public static bool FaceOverride { get; private set; } = true;
@@ -72,7 +72,7 @@ namespace ml_dht
             };
             ViewManager.Instance.gameMenuView.Listener.FinishLoad += (_) =>
             {
-                ViewManager.Instance.gameMenuView.View.ExecuteScript(Scripts.GetEmbeddedScript("menu.js"));
+                //ViewManager.Instance.gameMenuView.View.ExecuteScript(Scripts.GetEmbeddedScript("menu.js"));
                 foreach(var l_entry in ms_entries)
                     ViewManager.Instance.gameMenuView.View.TriggerEvent("updateModSettingDHT", l_entry.DisplayName, l_entry.GetValueAsString());
             };

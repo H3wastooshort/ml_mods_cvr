@@ -20,7 +20,7 @@ namespace ml_dht
         bool m_mirrored = false;
         bool m_faceOverride = true;
 
-        public bool rel_rotation = true;
+        public bool rel_rotation = false;
 
         public MelonLoader.MelonLogger.Instance log;
 
@@ -45,6 +45,15 @@ namespace ml_dht
         Quaternion prevHeadRot = Quaternion.identity;
         bool prevHeadValid = false;
 
+        public void dump_data(MelonLogger.Instance logger)
+        {
+            float conv = 360 / (2 * Mathf.PI);
+            logger.Msg(m_enabled ? "Mod Enabled" : "Mod Disabled");
+            logger.Msg(m_headTracking ? "Head Enabled" : "Head Disabled");
+            logger.Msg(string.Format("Head Pos: X{0} Y{1} Z{2}", m_headPosition.x, m_headPosition.y, m_headPosition.z));
+            logger.Msg(string.Format("Head Rot: X{0}° Y{1}° Z{2}°", m_headRotation.x * conv, m_headRotation.y * conv, m_headRotation.z * conv));
+        }
+
         internal void OnIKPreUpdate()
         {
             if (m_vrIK != null && m_headTracking && m_enabled) {
@@ -61,7 +70,10 @@ namespace ml_dht
                 if (rel_rotation)
                 {
                     Transform l_camera = PlayerSetup.Instance.GetActiveCamera().transform;
-                    m_vrIK.solver.spine.headTarget.transform.rotation *= l_camera.rotation.normalized;
+                    Vector3 normrot = m_vrIK.solver.spine.headTarget.transform.rotation.normalized.eulerAngles;
+                    Vector3 camrot = l_camera.rotation.normalized.eulerAngles;
+                    normrot.y += camrot.y;
+                    m_vrIK.solver.spine.headTarget.transform.eulerAngles=normrot;
                 }
             }
         }
