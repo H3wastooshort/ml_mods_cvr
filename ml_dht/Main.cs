@@ -21,7 +21,7 @@ namespace ml_dht
                 ms_instance = this;
 
             LoggerInstance.Msg("Bad Desktop Head Tracking, by SDraw, badly fixed by H3");
-            LoggerInstance.Msg("F5 -> Enable ; F6 -> Disable ; F7 -> Relative Rotation (WIP) ; F8 -> Dump Data to Console");
+            LoggerInstance.Msg("F5 -> Enable ; F6 -> Disable ; F8 -> Dump Data to Console");
 
             Settings.Init();
 
@@ -103,11 +103,11 @@ namespace ml_dht
         { 
             if (Input.GetKeyDown(KeyCode.F5)) m_localTracked.SetEnabled(true);
             if (Input.GetKeyDown(KeyCode.F6)) m_localTracked.SetEnabled(false);
-            if (Input.GetKeyDown(KeyCode.F7))
+            /*if (Input.GetKeyDown(KeyCode.F7))
             {
                 m_localTracked.rel_rotation = !m_localTracked.rel_rotation;
                 LoggerInstance.Msg(m_localTracked.rel_rotation  ? "RelRot On" :"RelRot Off");
-            }
+            }*/
             if (Input.GetKeyDown(KeyCode.F8)) m_localTracked.dump_data(LoggerInstance);
         }
 

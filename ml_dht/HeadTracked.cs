@@ -20,7 +20,7 @@ namespace ml_dht
         bool m_mirrored = false;
         bool m_faceOverride = true;
 
-        public bool rel_rotation = false;
+        //public bool rel_rotation = false;
 
         public MelonLoader.MelonLogger.Instance log;
 
@@ -67,14 +67,14 @@ namespace ml_dht
                 m_vrIK.solver.spine.headTarget.transform.localRotation = m_headRotation.normalized;
 
 
-                if (rel_rotation)
+                /*if (rel_rotation)
                 {
                     Transform l_camera = PlayerSetup.Instance.GetActiveCamera().transform;
                     Vector3 normrot = m_vrIK.solver.spine.headTarget.transform.rotation.normalized.eulerAngles;
                     Vector3 camrot = l_camera.rotation.normalized.eulerAngles;
                     normrot.y += camrot.y;
                     m_vrIK.solver.spine.headTarget.transform.eulerAngles=normrot;
-                }
+                }*/
             }
         }
 
