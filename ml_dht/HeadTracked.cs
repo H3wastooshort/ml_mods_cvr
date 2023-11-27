@@ -91,8 +91,8 @@ namespace ml_dht
         // Unity events
         void Start()
         {
-            Settings.EnabledChange += this.SetEnabled;
-            Settings.HeadTrackingChange += this.SetHeadTracking;
+            /*Settings.EnabledChange += this.SetEnabled;
+            Settings.HeadTrackingChange += this.SetHeadTracking;*/
             Settings.EyeTrackingChange += this.SetEyeTracking;
             Settings.BlinkingChange += this.SetBlinking;
             Settings.SmoothingChange += this.SetSmoothing;
@@ -102,8 +102,8 @@ namespace ml_dht
 
         void OnDestroy()
         {
-            Settings.EnabledChange -= this.SetEnabled;
-            Settings.HeadTrackingChange -= this.SetHeadTracking;
+            /*Settings.EnabledChange -= this.SetEnabled;
+            Settings.HeadTrackingChange -= this.SetHeadTracking;*/
             Settings.EyeTrackingChange -= this.SetEyeTracking;
             Settings.BlinkingChange -= this.SetBlinking;
             Settings.SmoothingChange -= this.SetSmoothing;
