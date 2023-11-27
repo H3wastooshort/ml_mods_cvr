@@ -25,7 +25,7 @@ namespace ml_dht
         public MelonLoader.MelonLogger.Instance log;
 
         CVRAvatar m_avatarDescriptor = null;
-        LookAtIK m_lookIK = null;
+        //LookAtIK m_lookIK = null;
         Transform m_headBone = null;
 
         Vector3 m_headPosition;
@@ -122,7 +122,7 @@ namespace ml_dht
             m_eyebrowsProgress = p_data.m_brows;
         }
 
-        void OnLookIKPostUpdate()
+        /*void OnLookIKPostUpdate()
         {
             if(m_enabled && m_headTracking && (m_headBone != null))
             {
@@ -131,7 +131,7 @@ namespace ml_dht
                 if(!(bool)ms_emotePlaying.GetValue(PlayerSetup.Instance))
                     m_headBone.rotation = m_lastHeadRotation;
             }
-        }
+        }*/
 
         // Game events
         /*internal void OnEyeControllerUpdate(CVREyeController p_component)
@@ -157,7 +157,7 @@ namespace ml_dht
             }
         }*/
 
-        internal void OnFaceTrackingUpdate(CVRFaceTracking p_component)
+        /*internal void OnFaceTrackingUpdate(CVRFaceTracking p_component)
         {
             if (m_enabled && m_faceOverride)
             {
@@ -173,7 +173,7 @@ namespace ml_dht
                 p_component.LipSyncWasUpdated = true;
                 //p_component.UpdateLipShapes();
             }
-        }
+        }*/
 
         internal void OnSetupAvatar()
         {
@@ -184,20 +184,20 @@ namespace ml_dht
 
             m_avatarDescriptor = PlayerSetup.Instance._avatar.GetComponent<CVRAvatar>();
             m_headBone = PlayerSetup.Instance._animator.GetBoneTransform(HumanBodyBones.Head);
-            m_lookIK = PlayerSetup.Instance._avatar.GetComponent<LookAtIK>();
+            //m_lookIK = PlayerSetup.Instance._avatar.GetComponent<LookAtIK>();
 
             if(m_headBone != null)
                 m_bindRotation = (m_avatarDescriptor.transform.GetMatrix().inverse * m_headBone.GetMatrix()).rotation;
 
-            if(m_lookIK != null)
-                m_lookIK.solver.OnPostUpdate += this.OnLookIKPostUpdate;
+            /*if(m_lookIK != null)
+                m_lookIK.solver.OnPostUpdate += this.OnLookIKPostUpdate;*/
 
         }
         internal void OnAvatarClear()
         {
             m_vrIK = null;
             m_avatarDescriptor = null;
-            m_lookIK = null;
+            //m_lookIK = null;
             m_headBone = null;
             m_lastHeadRotation = Quaternion.identity;
             m_bindRotation = Quaternion.identity;
