@@ -64,22 +64,27 @@ namespace ml_dht
             m_blinkProgress = p_data.m_blink;
         }
 
-        void OnLookIKPostUpdate()
+        internal void calc_n_set_head()
         {
-            if(m_enabled && m_headTracking && (m_headBone != null))
+            if (m_enabled && m_headTracking && (m_headBone != null))
             {
                 m_lastHeadRotation = Quaternion.Slerp(m_lastHeadRotation, m_avatarDescriptor.transform.rotation * (m_headRotation * m_bindRotation), m_smoothing);
 
-                if(!(bool)ms_emotePlaying.GetValue(PlayerSetup.Instance))
+                if (!(bool)ms_emotePlaying.GetValue(PlayerSetup.Instance))
                     m_headBone.rotation = m_lastHeadRotation;
             }
         }
 
+        void OnLookIKPostUpdate()
+        {
+            calc_n_set_head();
+        }
+
         internal void OnIKPreUpdate()
         {
-            if (m_vrIK != null && m_enabled && m_headTracking && (m_headBone != null))
+            if (m_vrIK != null && m_enabled && m_headTracking)
             {
-                //m_lastHeadRotation = Quaternion.Slerp(m_lastHeadRotation, m_avatarDescriptor.transform.rotation * (m_headRotation * m_bindRotation), m_smoothing);
+                calc_n_set_head();
 
                 if (!(bool)ms_emotePlaying.GetValue(PlayerSetup.Instance)) {
 
@@ -112,6 +117,7 @@ namespace ml_dht
                 m_vrIK.solver.spine.headTarget.transform.localRotation = prevHeadRot;
                 prevHeadValid = false;
             }
+            calc_n_set_head();
         }
 
         // Game events
