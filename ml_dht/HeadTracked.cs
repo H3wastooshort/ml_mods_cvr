@@ -1,5 +1,6 @@
 ﻿using ABI.CCK.Components;
 using ABI_RC.Core.Player;
+using MelonLoader;
 using RootMotion.FinalIK;
 using System.Reflection;
 using UnityEngine;
@@ -33,6 +34,12 @@ namespace ml_dht
 
         Quaternion m_bindRotation;
         Quaternion m_lastHeadRotation;
+
+        VRIK m_vrIK = null;
+
+        Vector3 prevHeadPos = Vector3.zero;
+        Quaternion prevHeadRot = Quaternion.identity;
+        bool prevHeadValid = false;
 
         // Unity events
         void Start()
@@ -79,6 +86,45 @@ namespace ml_dht
             }
         }
 
+        internal void OnIKPreUpdate()
+        {
+            if (m_vrIK != null && m_enabled && m_headTracking && (m_headBone != null))
+            {
+                //m_lastHeadRotation = Quaternion.Slerp(m_lastHeadRotation, m_avatarDescriptor.transform.rotation * (m_headRotation * m_bindRotation), m_smoothing);
+
+                if (!(bool)ms_emotePlaying.GetValue(PlayerSetup.Instance)) {
+
+                    //prevHeadPos = m_vrIK.solver.spine.headTarget.transform.localPosition;
+
+                    prevHeadRot = m_vrIK.solver.spine.headTarget.transform.localRotation;
+                    prevHeadValid = true;
+
+                    //m_vrIK.solver.spine.headTarget.transform.localPosition = m_headPosition;
+                    m_vrIK.solver.spine.headTarget.transform.localRotation = m_headRotation.normalized;
+
+
+                    /*if (rel_rotation)
+                    {
+                        Transform l_camera = PlayerSetup.Instance.GetActiveCamera().transform;
+                        Vector3 normrot = m_vrIK.solver.spine.headTarget.transform.rotation.normalized.eulerAngles;
+                        Vector3 camrot = l_camera.rotation.normalized.eulerAngles;
+                        normrot.y += camrot.y;
+                        m_vrIK.solver.spine.headTarget.transform.eulerAngles=normrot;
+                    }*/
+                }
+            }
+        }
+
+        internal void OnIKPostUpdate()
+        {
+            if (m_vrIK != null && prevHeadValid)
+            {
+                //m_vrIK.solver.spine.headTarget.transform.localPosition = prevHeadPos;
+                m_vrIK.solver.spine.headTarget.transform.localRotation = prevHeadRot;
+                prevHeadValid = false;
+            }
+        }
+
         // Game events
         internal void OnEyeControllerUpdate(CVREyeController p_component)
         {
@@ -116,12 +162,16 @@ namespace ml_dht
                 p_component.BlendShapeValues[(int)LipShape_v2.Mouth_Smile_Left] = ((m_mouthShapes.y < 0f) ? l_weight : 0f);
                 p_component.BlendShapeValues[(int)LipShape_v2.Mouth_Smile_Right] = ((m_mouthShapes.y < 0f) ? l_weight : 0f);
                 p_component.LipSyncWasUpdated = true;
-                p_component.UpdateLipShapes();
+                //p_component.UpdateLipShapes();
             }
         }
 
         internal void OnSetupAvatar()
         {
+            m_vrIK = PlayerSetup.Instance._animator.GetComponent<VRIK>();
+            m_vrIK.solver.OnPreUpdate += this.OnIKPreUpdate;
+            m_vrIK.solver.OnPostUpdate += this.OnIKPostUpdate;
+
             m_avatarDescriptor = PlayerSetup.Instance._avatar.GetComponent<CVRAvatar>();
             m_headBone = PlayerSetup.Instance._animator.GetBoneTransform(HumanBodyBones.Head);
             m_lookIK = PlayerSetup.Instance._avatar.GetComponent<LookAtIK>();
@@ -135,6 +185,7 @@ namespace ml_dht
         }
         internal void OnAvatarClear()
         {
+            m_vrIK = null;
             m_avatarDescriptor = null;
             m_lookIK = null;
             m_headBone = null;
